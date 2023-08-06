@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/golangast/contribute/handler/get/home"
+	"github.com/golangast/goservershell/src/handler/get/home"
 	"github.com/labstack/echo/v4"
 )
 

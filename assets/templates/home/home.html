@@ -1,31 +1,21 @@
-{{ template "header/header" . }}
+{{ template "header" . }}
 
 i really like using tabs :)
 <ul class="nav nav-tabs" id="toptab" role="tablist">
   <li class="nav-item" role="presentation">
-    <button class="nav-link " id="generate-tab" data-bs-toggle="tab" data-bs-target="#generate" type="button" role="tab"
-      aria-controls="generate" aria-selected="true">Generate</button>
+    <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab"
+      aria-controls="contact" aria-selected="true">Contact Me</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="show-tab" data-bs-toggle="tab" data-bs-target="#show" type="button" role="tab"
-      aria-controls="show" aria-selected="true">Show</button>
+    <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab"
+      aria-controls="about" aria-selected="true">About</button>
   </li>
-  <li class="nav-item " role="presentation">
-    <button class="nav-link" id="database-tab" data-bs-toggle="tab" data-bs-target="#database" type="button" role="tab"
-      aria-controls="database" aria-selected="true">Database</button>
-  </li>
-  <li class="nav-item " role="presentation">
-    <button class="nav-link" id="datavars-tab" data-bs-toggle="tab" data-bs-target="#datavars" type="button" role="tab"
-      aria-controls="datavars" aria-selected="true">Data Vars</button>
-  </li>
+ 
 </ul>
 <div class="tab-content" id="myTabContent">
 
-
-  <!-- 
-    encase you need an example for adding files
-    {{ template "generate" . }}
-   -->
+  {{ template "contact" . }}
+  {{ template "about" . }}
 
 </div>
 
@@ -82,4 +72,4 @@ i really like using tabs :)
   }
 </style>
 
-{{ template "footer/footer" . }}
+{{ template "footer" . }}

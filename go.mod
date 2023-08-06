@@ -7,6 +7,7 @@ require (
 	github.com/golangast/contribute v0.0.0-20230326144017-c5d13b4240a4
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/labstack/gommon v0.4.0
+	github.com/spf13/cobra v1.7.0
 )
 
 require (
@@ -23,7 +24,6 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect

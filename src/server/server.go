@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/golangast/contribute/assets"
+	"github.com/golangast/goservershell/assets"
 	"github.com/golangast/goservershell/src/routes"
 
 	"github.com/Masterminds/sprig/v3"
@@ -33,7 +33,7 @@ func Server() {
 
 	renderer := &TemplateRenderer{
 		templates: template.Must(template.New("t").Funcs(template.FuncMap{
-			"adds": add,
+			//"adds": add,
 		}).Funcs(sprig.FuncMap()).ParseFS(assets.Assets, files...)),
 	}
 
@@ -66,7 +66,7 @@ func Server() {
 		Level: 5,
 	}))
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)))
-	e.Static("/static", "static")
+	e.Static("/static", "assets/static")
 	e.Logger.Fatal(e.Start(":5002"))
 
 }
