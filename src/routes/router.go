@@ -9,4 +9,5 @@ func Routes(e *echo.Echo) {
 	e.GET("/home", home.Home)
 
 	//#routes
+
 }
