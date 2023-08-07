@@ -52,17 +52,17 @@ $ gonew github.com/golangast/goservershell example.com/myserver
 ## Repository overview
 ```bash
 ├── cmd
-├── internal (services)
+├── internal (services)[just a simple database example]
 │   ├── dbsql
 │   │   ├── dbconn
 │   │   └── gettable
-│   └── security
+│   └── security (left to the user to configure)
 │       ├── cookies
 │       ├── crypt
 │       ├── jwt
 │       ├── tokens
 │       └── validate
-├── src (app)
+├── src (app)[meat and bones of the application]
 │   ├── funcmaps
 │   ├── handler
 │   ├── routes
