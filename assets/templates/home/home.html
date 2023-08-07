@@ -1,6 +1,13 @@
 {{ template "header" . }}
 
-i really like using tabs :)
+
+
+<p>here is some data from the database</p>
+{{if .users}}
+{{range $i , $U := .users}}
+{{index $U}}
+{{end}}
+{{end}}
 <ul class="nav nav-tabs" id="toptab" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab"

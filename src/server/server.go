@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/golangast/goservershell/assets"
+	"github.com/golangast/goservershell/src/funcmaps"
 	"github.com/golangast/goservershell/src/routes"
 
 	"github.com/Masterminds/sprig/v3"
@@ -19,10 +20,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 )
-
-func add() string {
-	return "ere"
-}
 
 func Server() {
 	e := echo.New()
@@ -33,7 +30,8 @@ func Server() {
 
 	renderer := &TemplateRenderer{
 		templates: template.Must(template.New("t").Funcs(template.FuncMap{
-			//"adds": add,
+			"IndexCount":     funcmaps.IndexCount,
+			"RemoveBrackets": funcmaps.RemoveBrackets,
 		}).Funcs(sprig.FuncMap()).ParseFS(assets.Assets, files...)),
 	}
 

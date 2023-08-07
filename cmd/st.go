@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"runtime"
 
+	"github.com/golangast/goservershell/internal/dbsql/dbconn"
 	"github.com/golangast/goservershell/src/server"
 	"github.com/spf13/cobra"
 )
@@ -21,6 +22,10 @@ var stCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("st called")
+		_, err := dbconn.DbConnection() //create db instance
+		dbconn.ErrorCheck(err)
+		fmt.Println("db connected")
+
 		err, out, errout := Startprograms(`go build`)
 		if err != nil {
 			log.Printf("error: %v\n", err)
