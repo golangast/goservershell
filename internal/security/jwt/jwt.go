@@ -2,12 +2,9 @@ package jwt
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/golangast/goservershell/internal/security/crypt"
-	"github.com/labstack/echo/v4"
 )
 
 func CreateJWT(sessionname, sessionkey string) (string, error) {
@@ -30,16 +27,4 @@ func CreateJWT(sessionname, sessionkey string) (string, error) {
 	}
 
 	return t, nil
-}
-func AuthoCreate(c echo.Context, sessionname, sessionkey string) (string, string, error) {
-	t, err := CreateJWT(sessionname, sessionkey)
-	if err != nil {
-		return "", "", err
-	}
-	cookie := new(http.Cookie)
-	cookie.Name = sessionname
-	cookie.Value = sessionkey
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	c.SetCookie(cookie)
-	return t, crypt.CreateHash(t), err
 }

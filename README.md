@@ -45,8 +45,8 @@ Project is created with:
 Just use the new [gonew](https://go.dev/blog/gonew)
 
 ```
-$ go install golang.org/x/tools/cmd/gonew@latest
-$ gonew github.com/golangast/goservershell example.com/myserver
+go install golang.org/x/tools/cmd/gonew@latest
+gonew github.com/golangast/goservershell example.com/myserver
 ```
 
 ## Repository overview
