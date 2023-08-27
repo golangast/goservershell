@@ -55,12 +55,11 @@ Project is created with:
 * [viper](github.com/spf13/cobra) - build cli commands
 * [echo](github.com/labstack/echo/v4) - web framework to shorten code
 * [sprig](https://github.com/Masterminds/sprig) - template functions
-* [sprig](github.com/nurlantulemisov/imagecompression) - image compression
-* [sprig](github.com/nurlantulemisov/imagecompression) - image compression
-* [sprig](github.com/tdewolff/minify/v2) - assets optimization
-* [sprig](gopkg.in/gomail.v2) - email accessibility
-* [sprig](github.com/golang-jwt/jwt) - JWT authentication
-* [sprig](github.com/go-playground/validator) - Validation
+* [imagecompression](github.com/nurlantulemisov/imagecompression) - image compression
+* [minify](github.com/tdewolff/minify/v2) - assets optimization
+* [gomail](gopkg.in/gomail.v2) - email accessibility
+* [jwt](github.com/golang-jwt/jwt) - JWT authentication
+* [validator](github.com/go-playground/validator) - Validation
 
 
 ## Requirements
