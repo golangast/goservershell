@@ -56,7 +56,7 @@ Project is created with:
 * [echo](https://github.com/labstack/echo/v4) - web framework to shorten code
 * [sprig](https://github.com/Masterminds/sprig) - template functions
 * [imagecompression](https://github.com/nurlantulemisov/imagecompression) - image compression
-* [minify](https://github.com/tdewolff/minify/v2) - assets optimization
+* [minify](https://github.com/tdewolff/minify) - assets optimization
 * [gomail](https://gopkg.in/gomail.v2) - email accessibility
 * [jwt](https://github.com/golang-jwt/jwt) - JWT authentication
 * [validator](https://github.com/go-playground/validator) - Validation
