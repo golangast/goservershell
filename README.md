@@ -52,14 +52,14 @@ This project is a template for gonew and is used for setting up a webserver usin
 Project is created with:
 * [modernc.org/sqlite](https://pkg.go.dev/modernc.org/sqlite) - database
 * [go-ps](https://github.com/mitchellh/go-ps) - getting pids in all OS's
-* [viper](https://ggithub.com/spf13/cobra) - build cli commands
-* [echo](https://ggithub.com/labstack/echo/v4) - web framework to shorten code
+* [viper](https://github.com/spf13/cobra) - build cli commands
+* [echo](https://github.com/labstack/echo/v4) - web framework to shorten code
 * [sprig](https://github.com/Masterminds/sprig) - template functions
-* [imagecompression](https://ggithub.com/nurlantulemisov/imagecompression) - image compression
-* [minify](https://ggithub.com/tdewolff/minify/v2) - assets optimization
-* [gomail](https://ggopkg.in/gomail.v2) - email accessibility
-* [jwt](https://ggithub.com/golang-jwt/jwt) - JWT authentication
-* [validator](https://ggithub.com/go-playground/validator) - Validation
+* [imagecompression](https://github.com/nurlantulemisov/imagecompression) - image compression
+* [minify](https://github.com/tdewolff/minify/v2) - assets optimization
+* [gomail](https://gopkg.in/gomail.v2) - email accessibility
+* [jwt](https://github.com/golang-jwt/jwt) - JWT authentication
+* [validator](https://github.com/go-playground/validator) - Validation
 
 
 ## Requirements
