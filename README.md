@@ -21,6 +21,7 @@
   - [Why build this?](#why-build-this)
   - [What does it do?](#what-does-it-do)
   - [Technologies](#technologies)
+  - [Non Go Technologies](#non-go-technologies)
   - [Requirements](#requirements)
   - [Setup](#setup)
   - [Commands](#commands)
@@ -51,7 +52,6 @@ This project is a template for gonew and is used for setting up a webserver usin
 ## Technologies
 Project is created with:
 * [modernc.org/sqlite](https://pkg.go.dev/modernc.org/sqlite) - database
-* [go-ps](https://github.com/mitchellh/go-ps) - getting pids in all OS's
 * [viper](https://github.com/spf13/cobra) - build cli commands
 * [echo](https://github.com/labstack/echo/v4) - web framework to shorten code
 * [sprig](https://github.com/Masterminds/sprig) - template functions
@@ -61,7 +61,10 @@ Project is created with:
 * [jwt](https://github.com/golang-jwt/jwt) - JWT authentication
 * [validator](https://github.com/go-playground/validator) - Validation
 
-
+## Non Go Technologies
+* [Bootstrap](https://getbootstrap.com/) - Bootstrap
+* [jQuery](https://jquery.com/) - jQeury
+* [Materialize](https://materializecss.com/) - Materialize
 ## Requirements
 * go 1.21 for gonew
 
@@ -82,10 +85,15 @@ go mod vendor
 REMEMBER TO RUN 'go mod tidy' and 'go mod vendor' after to pull down dependencies
 
 ## Commands
+//to run the program
 ```
-go run . st //to run the program
+go run . st 
 
-go run . min //to optimize assets. It optimizes whats in assets/build and then adds them to assets/optimized
+```
+//to optimize assets. It optimizes whats in assets/build and then adds them to assets/optimized
+```
+go run . min 
+
 ```
 
 ## Repository overview

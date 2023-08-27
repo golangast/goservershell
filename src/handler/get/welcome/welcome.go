@@ -8,6 +8,10 @@ import (
 
 func Welcome(c echo.Context) error {
 
-	return c.Render(http.StatusOK, "welcome.html", map[string]interface{}{})
+	nonce := c.Get("n")
+
+	return c.Render(http.StatusOK, "welcome.html", map[string]interface{}{
+		"nonce": nonce,
+	})
 
 }
