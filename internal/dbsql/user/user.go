@@ -101,6 +101,54 @@ func (u *Users) CheckLogin(c echo.Context, email, sitetokens, passwordraw string
 	}
 
 }
+func (u *Users) CheckUser(c echo.Context, email, sitetokens string) (error, string) {
+	db, err := dbconn.DbConnection()
+	if err != nil {
+		return err, "wrong input"
+	}
+	var exists string
+	ctx, cancel := context.WithTimeout(context.Background(), 56666*time.Millisecond)
+	defer cancel()
+	stmts := db.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM users WHERE email=? AND sitetoken=?)", email, sitetokens)
+	err = stmts.Scan(&exists)
+	if err != nil {
+		return err, "wrong input"
+	}
+
+	if exists == "0" {
+		return err, "wrong input"
+	} else {
+		u, err := u.GetUserByEmail(email, sitetokens)
+		if err != nil {
+			return err, "wrong input"
+		}
+
+		err = crypt.CheckPassword([]byte(u.PasswordHash), []byte(u.PasswordRaw))
+		if err != nil {
+			return err, "wrong input"
+		}
+
+		cookie, err := cookies.ReadCookie(c, u.SessionName)
+		if err != nil {
+			return err, "wrong input"
+		}
+
+		fmt.Println(u)
+		if cookie.Name != u.SessionName && cookie.Value != u.SessionKey {
+			return err, "wrong input"
+		}
+
+		//header
+		hkey := c.Response().Header().Get("headerkey")
+
+		crypt.CheckPassword([]byte(hkey), []byte("goservershell"))
+
+		db.Close()
+
+		return nil, ""
+	}
+
+}
 func (u *Users) Create() error {
 
 	db, err := dbconn.DbConnection()

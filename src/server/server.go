@@ -16,17 +16,38 @@ import (
 
 	"github.com/Masterminds/sprig/v3"
 
+	"github.com/golangast/goservershell/internal/dbsql/user"
+	"github.com/golangast/goservershell/src/handler/get/welcome"
+
+	"github.com/golangast/goservershell/internal/security/tokens"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 )
 
 func Server() {
+
 	e := echo.New()
 	files, err := getAllFilenames(&assets.Assets)
 	if err != nil {
 		fmt.Print(err)
 	}
+
+	//if you are planning on using binary assets then use this but if you turn it on then
+	//you have to rebuild every time you rerun it.
+	// filesoptimized, err := getAllFilenames(&assets.AssetsOptimized)
+	// if err != nil {
+	// 	fmt.Print(err)
+	// }
+
+	//for CSP policy to ensure that the assets are always available and secure
+	Nonce := fmt.Sprintf("nonce-%d", 1)
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Set("n", Nonce)
+			return next(c)
+		}
+	})
 
 	renderer := &TemplateRenderer{
 		templates: template.Must(template.New("t").Funcs(template.FuncMap{
@@ -36,6 +57,35 @@ func Server() {
 	}
 
 	e.Renderer = renderer
+
+	queryAuthConfig := middleware.KeyAuthConfig{
+		KeyLookup: "query:sitetoken,header:headkey,cookie:goservershell",
+		Validator: func(key string, c echo.Context) (bool, error) {
+			user := new(user.Users)
+			email := c.Param("email")
+			idkey := c.Param("sitetoken")
+
+			err, exists := user.CheckUser(c, email, idkey)
+			if err != nil {
+				fmt.Println("middleware", exists)
+				return false, err
+			}
+
+			fmt.Println(key, " keylookup")
+			b := tokens.Checktokencontext(key)
+			return b, nil
+		},
+
+		ErrorHandler: func(error, echo.Context) error {
+			var err error
+
+			return err
+		},
+	}
+	r := e.Group("/restricted")
+	r.Use(middleware.KeyAuthWithConfig(queryAuthConfig))
+	r.GET("/welcome/:email/:sitetoken", welcome.Welcome)
+
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Filesystem: getFileSystem(assets.Assets),
 		HTML5:      true,
@@ -51,12 +101,21 @@ func Server() {
 	e.Logger.SetLevel(log.ERROR)
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	// Generate a nonce
+
 	e.Use(middleware.SecureWithConfig(middleware.SecureConfig{
 		XSSProtection:         "1; mode=block",
-		ContentTypeNosniff:    "nosniff",
 		XFrameOptions:         "SAMEORIGIN",
-		HSTSMaxAge:            3600,
-		ContentSecurityPolicy: "",
+		HSTSMaxAge:            31536000,
+		ContentSecurityPolicy: "default-src 'self'; style-src 'self' 'nonce-" + Nonce + "'",
+	}))
+
+	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup:    "header:headkey",
+		CookiePath:     "/",
+		CookieDomain:   "localhost",
+		CookieSecure:   true,
+		CookieHTTPOnly: true,
 	}))
 	e.Use(middleware.BodyLimit("3M"))
 	e.IPExtractor = echo.ExtractIPDirect()
@@ -64,8 +123,9 @@ func Server() {
 		Level: 5,
 	}))
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)))
-	e.Static("/static", "assets/static")
-	e.Logger.Fatal(e.Start(":5002"))
+	e.Static("/", "assets/optimized")
+
+	e.Logger.Fatal(e.StartTLS(":5002", "cert.pem", "key.pem"))
 
 }
 

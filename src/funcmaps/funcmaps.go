@@ -22,3 +22,6 @@ func RemoveBrackets(a []string) string {
 	}
 	return aaaa
 }
+func CSP(a string) string {
+	return a
+}

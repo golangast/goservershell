@@ -25,6 +25,28 @@
             "dlvFlags": [
                 "--check-go-version=false"
             ]
+        },
+        {
+            "name": "Launcher",
+            "type": "go",
+            "request": "launch",
+            // "debugAdapter": "dlv-dap",
+            "mode": "auto",
+            "program": "${workspaceFolder}/imgopt/main.go",
+            "env": {},
+            "args": [
+                "st"
+            ],
+            "dlvLoadConfig": {
+                "followPointers": true,
+                "maxVariableRecurse": 1,
+                "maxStringLen": 512,
+                "maxArrayValues": 64,
+                "maxStructFields": -1
+            },
+            "dlvFlags": [
+                "--check-go-version=false"
+            ]
         }
     ]
 }
