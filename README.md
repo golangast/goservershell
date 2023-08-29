@@ -109,9 +109,9 @@ If you are familiar with https://github.com/bokwoon95/wgo then you can use the f
 ```
 wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st
 ```
-or you can use the following to do both at the same time but remember its just building the assets once.
+or you can use the following to do both at the same time.
 ```
-go run . min && wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st
+wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st && wgo run main.go min
 ```
 REMEMBER! that your assets like js/css are in the assets/build folder and they are linked in the html
 from the assets/optimized folder.  You can always change this in the ./optimize config folder if you want.
