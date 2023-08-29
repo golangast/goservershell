@@ -26,6 +26,7 @@
   - [Setup](#setup)
   - [Commands](#commands)
   - [Repository overview](#repository-overview)
+  - [Things to remember](#things-to-remember)
   - [Special thanks](#special-thanks)
 
 
@@ -60,6 +61,7 @@ Project is created with:
 * [gomail](https://gopkg.in/gomail.v2) - email accessibility
 * [jwt](https://github.com/golang-jwt/jwt) - JWT authentication
 * [validator](https://github.com/go-playground/validator) - Validation
+* [GOW](https://github.com/bokwoon95/wgo) - for live reloading
 
 ## Non Go Technologies
 * [Bootstrap](https://getbootstrap.com/) - Bootstrap
@@ -96,6 +98,18 @@ go run . min
 
 ```
 
+If you installed https://github.com/bokwoon95/wgo then you can use the following to have live reloading.
+-xdir means dont watch that dir
+-dir means watch that directory
+-verbose means print out the watching directory
+```
+wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st
+```
+REMEMBER! that your assets like js/css are in the assets/build folder and they are linked in the html
+from the assets/optimized folder.  You can always change this in the ./optimize config folder if you want.
+But the reloading will not pull new assets by default because it expects you to build them first so that
+they are linked all in one file.
+
 ## Repository overview
 ```bash
 ├── cmd
@@ -123,6 +137,19 @@ go run . min
 │   └── server
 
 ```
+
+## Things to remember
+* 1. That this is a work in progress so things may not be 100% correct.
+* 2. That the asset path to the html by default are linked to assets/optimized folder
+* 3. That the js/css optimizations are not making function names single letter and do not like comments and may not like imports. (work around might be copy past from cdn).
+* 4. That templates folder is in assets folder 
+* 5. That you do need to configure the email with your credentials so that it actually works with the form.
+* 6. That this is just for learning and testing and of course needs to be refined on your end.
+* 7. That you still need to bring along templates and assets for the binary because I didnt want to have to build it every live reload.
+* 8. So yes, there is a lot that needs to be done before you just make a it a binary.
+
+
+
 
 <h3 align="left">Support:</h3>
 <p><a href="https://ko-fi.com/zacharyendrulat98451"> <img align="left" src="https://cdn.ko-fi.com/cdn/kofi3.png?v=3" height="50" width="210" alt="zacharyendrulat98451" /></a></p><br><br>

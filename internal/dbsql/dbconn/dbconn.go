@@ -8,7 +8,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const file string = "./internal/dbsql/dbconn/database.db"
+const file string = "./database.db"
 
 func DbConnection() (*sql.DB, error) {
 
