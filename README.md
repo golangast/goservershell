@@ -78,12 +78,16 @@ go install golang.org/x/tools/cmd/gonew@latest
 
 gonew github.com/golangast/goservershell example.com/myserver
 
-go mod tidy
-
 go mod vendor
 
 
 ```
+
+Or you can just run this.
+```
+gonew github.com/golangast/goservershell example.com/myserver && go mod vendor
+```
+
 REMEMBER TO RUN 'go mod tidy' and 'go mod vendor' after to pull down dependencies
 
 ## Commands
@@ -98,12 +102,16 @@ go run . min
 
 ```
 
-If you installed https://github.com/bokwoon95/wgo then you can use the following to have live reloading.
+If you are familiar with https://github.com/bokwoon95/wgo then you can use the following to have live reloading.
 -xdir means dont watch that dir
 -dir means watch that directory
 -verbose means print out the watching directory
 ```
 wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st
+```
+or you can use the following to do both at the same time but remember its just building the assets once.
+```
+go run . min && wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st
 ```
 REMEMBER! that your assets like js/css are in the assets/build folder and they are linked in the html
 from the assets/optimized folder.  You can always change this in the ./optimize config folder if you want.
