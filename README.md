@@ -83,10 +83,7 @@ go mod vendor
 
 ```
 
-Or you can just run this.
-```
-gonew github.com/golangast/goservershell example.com/myserver && go mod vendor
-```
+
 
 REMEMBER TO RUN 'go mod tidy' and 'go mod vendor' after to pull down dependencies
 
@@ -109,10 +106,7 @@ If you are familiar with https://github.com/bokwoon95/wgo then you can use the f
 ```
 wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st
 ```
-or you can use the following to do both at the same time.
-```
-wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st && wgo run main.go min
-```
+
 REMEMBER! that your assets like js/css are in the assets/build folder and they are linked in the html
 from the assets/optimized folder.  You can always change this in the ./optimize config folder if you want.
 But the reloading will not pull new assets by default because it expects you to build them first so that
