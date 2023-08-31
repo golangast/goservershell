@@ -48,6 +48,7 @@ This project is a template for gonew and is used for setting up a webserver usin
 * Database setup (sqlite)
 * Has middleware support
 * Is scaffolding for apis, crud, security
+* Made a video on it [here](https://youtu.be/HJHCndEVoiA?si=dTewGeY4TlGSKo4_)
 
 
 ## Technologies
