@@ -43,7 +43,10 @@ func Server() {
 	// }
 
 	//for CSP policy to ensure that the assets are always available and secure
-	rr := findjsrename()
+	jsr := findjsrename()
+	cssr := findcssrename()
+	rr := rand.Rander()
+
 	Nonce := fmt.Sprintf("nounce='" + rr + "'")
 
 	Noncer := template.HTMLAttr(Nonce)
@@ -51,7 +54,8 @@ func Server() {
 		return func(c echo.Context) error {
 
 			c.Set("n", Noncer)
-			c.Set("r", rr)
+			c.Set("jsr", jsr)
+			c.Set("cssr", cssr)
 			return next(c)
 		}
 	})
@@ -220,6 +224,47 @@ func findjsrename() string {
 		}
 
 		if strings.Contains(path, "/min") && strings.Contains(path, ".js") {
+
+			if _, err := os.Stat(New_Path); err != nil {
+				// The source does not exist or some other error accessing the source
+				fmt.Println("source:", err)
+			}
+
+			if _, err := os.Stat(path); err != nil {
+				// The destination exists or some other error accessing the destination
+				fmt.Println("dest:", err)
+			}
+			if err := os.Rename(path, New_Path); err != nil {
+				fmt.Println(err)
+			}
+
+		} else {
+			fmt.Println("doesnt contain directory", path)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return rr
+}
+
+func findcssrename() string {
+	// Get the current directory
+	currentDir := "./assets/optimized/css/"
+	rr := rand.Rander()
+	New_Path := "./assets/optimized/css/min" + rr + ".css"
+	// Walk the directory and print the names of all the files
+	err = filepath.Walk(currentDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		if strings.Contains(path, "/min") && strings.Contains(path, ".css") {
 
 			if _, err := os.Stat(New_Path); err != nil {
 				// The source does not exist or some other error accessing the source
