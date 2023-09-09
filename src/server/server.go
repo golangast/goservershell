@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"embed"
 	"fmt"
 	"html/template"
@@ -25,6 +26,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/spf13/viper"
 )
 
 func Server() {
@@ -48,6 +50,22 @@ func Server() {
 	rr := rand.Rander()
 
 	Nonce := fmt.Sprintf("nounce='" + rr + "'")
+	viper.SetConfigName("assetdirectory") // name of config file (without extension)
+	viper.SetConfigType("yaml")           // REQUIRED if the config file does not have the extension in the name
+	viper.AddConfigPath("./optimize/")    // path to look for the config file in
+	err = viper.ReadInConfig()            // Find and read the config file
+	if err != nil {
+		fmt.Println(err)
+	}
+	//get paths of asset folders from config file
+	cssout := viper.GetString("opt.cssout")
+	jsout := viper.GetString("opt.jsout")
+
+	cssnew := strings.ReplaceAll(cssout, "min", "min"+cssr)
+	jsnew := strings.ReplaceAll(jsout, "min", "min"+jsr)
+
+	UpdateText("./optimize/assetdirectory.yaml", cssout, cssnew)
+	UpdateText("./optimize/assetdirectory.yaml", jsout, jsnew)
 
 	Noncer := template.HTMLAttr(Nonce)
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -291,4 +309,23 @@ func findcssrename() string {
 	}
 
 	return rr
+}
+
+// f is for file, o is for old text, n is for new text
+func UpdateText(f string, o string, n string) {
+	fmt.Println(f, o, n)
+	input, err := os.ReadFile(f)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	output := bytes.Replace(input, []byte(o), []byte(n), -1)
+
+	fmt.Println("file: ", f, " old: ", o, " new: ", n)
+
+	if err = os.WriteFile(f, output, 0666); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

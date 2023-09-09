@@ -1,6 +1,6 @@
 opt:
   cssin: ./assets/build/css
-  cssout: ./assets/optimized/css/min.css
+  cssout: ./assets/optimized/css/min9070.css
   jsin: ./assets/build/js
-  jsout: ./assets/optimized/js/min.js
+  jsout: ./assets/optimized/js/min6660.js
   imgin: ./assets/optimized/img
