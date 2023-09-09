@@ -2,7 +2,8 @@
 </div>
 </body>
 
-  <script type="text/javascript" src="js/min.js" nonce="{{ .nonce }}"></script>
+<script type="text/javascript" src="js/min{{.scripttag }}.js" {{ .nonce }}></script>
+
   
 </html>
 {{end}}

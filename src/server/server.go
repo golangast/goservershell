@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/golangast/goservershell/assets"
 	"github.com/golangast/goservershell/src/funcmaps"
@@ -17,6 +18,7 @@ import (
 	"github.com/Masterminds/sprig/v3"
 
 	"github.com/golangast/goservershell/internal/dbsql/user"
+	"github.com/golangast/goservershell/internal/rand"
 	"github.com/golangast/goservershell/src/handler/get/welcome"
 
 	"github.com/golangast/goservershell/internal/security/tokens"
@@ -41,10 +43,15 @@ func Server() {
 	// }
 
 	//for CSP policy to ensure that the assets are always available and secure
-	Nonce := fmt.Sprintf("nonce-%d", 1)
+	rr := findjsrename()
+	Nonce := fmt.Sprintf("nounce='" + rr + "'")
+
+	Noncer := template.HTMLAttr(Nonce)
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.Set("n", Nonce)
+
+			c.Set("n", Noncer)
+			c.Set("r", rr)
 			return next(c)
 		}
 	})
@@ -198,4 +205,45 @@ func getAllFilenames(efs *embed.FS) (files []string, err error) {
 	}
 
 	return files, nil
+}
+
+func findjsrename() string {
+	// Get the current directory
+	currentDir := "./assets/optimized/js"
+	rr := rand.Rander()
+	New_Path := "./assets/optimized/js/min" + rr + ".js"
+	// Walk the directory and print the names of all the files
+	err = filepath.Walk(currentDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		if strings.Contains(path, "/min") && strings.Contains(path, ".js") {
+
+			if _, err := os.Stat(New_Path); err != nil {
+				// The source does not exist or some other error accessing the source
+				fmt.Println("source:", err)
+			}
+
+			if _, err := os.Stat(path); err != nil {
+				// The destination exists or some other error accessing the destination
+				fmt.Println("dest:", err)
+			}
+			if err := os.Rename(path, New_Path); err != nil {
+				fmt.Println(err)
+			}
+
+		} else {
+			fmt.Println("doesnt contain directory", path)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return rr
 }

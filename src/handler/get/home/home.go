@@ -9,9 +9,11 @@ import (
 func Home(c echo.Context) error {
 	//needed for nounce to be added to asset links for security to ensure they are those assets loading from this server
 	nonce := c.Get("n")
+	scripttag := c.Get("r")
 
 	return c.Render(http.StatusOK, "home.html", map[string]interface{}{
-		"nonce": nonce,
+		"nonce":     nonce,
+		"scripttag": scripttag,
 	})
 
 }
