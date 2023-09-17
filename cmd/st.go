@@ -5,12 +5,13 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
-	"log"
+	"os"
 	"os/exec"
 	"runtime"
 
-	"github.com/golangast/goservershell/internal/dbsql/dbconn"
+	"log/slog"
+
+	"github.com/golangast/goservershell/internal/loggers"
 	"github.com/golangast/goservershell/src/server"
 	"github.com/spf13/cobra"
 )
@@ -21,18 +22,24 @@ var stCmd = &cobra.Command{
 	Short: "to build and start program",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("st called")
-		_, err := dbconn.DbConnection() //create db instance
-		dbconn.ErrorCheck(err)
-		fmt.Println("db connected")
-
+		opts := loggers.PrettyHandlerOptions{
+			SlogOpts: slog.HandlerOptions{
+				AddSource: true,
+				Level:     slog.LevelDebug,
+			},
+		}
+		handler := loggers.NewPrettyHandler(os.Stdout, opts)
+		logger := slog.New(handler)
 		err, out, errout := Startprograms(`go build`)
 		if err != nil {
-			log.Printf("error: %v\n", err)
+			logger.Error(
+				"while trying to get files from assets",
+				slog.String("error: ", err.Error()),
+			)
 		}
-		fmt.Println(out)
-		fmt.Println("--- errs ---")
-		fmt.Println(errout)
+		if errout != "" && out != "" {
+			logger.Info("starting application", slog.String("out", out), slog.String("errors: ", errout))
+		}
 
 		server.Server()
 

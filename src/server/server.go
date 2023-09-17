@@ -16,9 +16,11 @@ import (
 	"github.com/golangast/goservershell/src/funcmaps"
 	"github.com/golangast/goservershell/src/routes"
 
-	"github.com/Masterminds/sprig/v3"
+	"log/slog"
 
+	"github.com/Masterminds/sprig/v3"
 	"github.com/golangast/goservershell/internal/dbsql/user"
+	"github.com/golangast/goservershell/internal/loggers"
 	"github.com/golangast/goservershell/internal/rand"
 	"github.com/golangast/goservershell/src/handler/get/welcome"
 
@@ -30,11 +32,14 @@ import (
 )
 
 func Server() {
-
+	logger := loggers.CreateLogger()
 	e := echo.New()
 	files, err := getAllFilenames(&assets.Assets)
 	if err != nil {
-		fmt.Print(err)
+		logger.Error(
+			"while trying to get files from assets",
+			slog.String("error: ", err.Error()),
+		)
 	}
 
 	//if you are planning on using binary assets then use this but if you turn it on then
@@ -55,7 +60,10 @@ func Server() {
 	viper.AddConfigPath("./optimize/")    // path to look for the config file in
 	err = viper.ReadInConfig()            // Find and read the config file
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(
+			"reading config file",
+			slog.String("error: ", err.Error()),
+		)
 	}
 	//get paths of asset folders from config file
 	cssout := viper.GetString("opt.cssout")
@@ -64,8 +72,20 @@ func Server() {
 	cssnew := strings.ReplaceAll(cssout, "min", "min"+cssr)
 	jsnew := strings.ReplaceAll(jsout, "min", "min"+jsr)
 
-	UpdateText("./optimize/assetdirectory.yaml", cssout, cssnew)
-	UpdateText("./optimize/assetdirectory.yaml", jsout, jsnew)
+	err = UpdateText("./optimize/assetdirectory.yaml", cssout, cssnew)
+	if err != nil {
+		logger.Error(
+			"trying to update text in ./optimize/assetdirectory.yaml with css",
+			slog.String("error: ", err.Error()),
+		)
+	}
+	err = UpdateText("./optimize/assetdirectory.yaml", jsout, jsnew)
+	if err != nil {
+		logger.Error(
+			"trying to update text in ./optimize/assetdirectory.yaml with js",
+			slog.String("error: ", err.Error()),
+		)
+	}
 
 	Noncer := template.HTMLAttr(Nonce)
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -96,11 +116,14 @@ func Server() {
 
 			err, exists := user.CheckUser(c, email, idkey)
 			if err != nil {
-				fmt.Println("middleware", exists)
+				logger.Error(
+					"middleware user doesnt exist",
+					slog.String("error: ", err.Error()),
+					exists,
+				)
 				return false, err
 			}
 
-			fmt.Println(key, " keylookup")
 			b := tokens.Checktokencontext(key)
 			return b, nil
 		},
@@ -136,7 +159,7 @@ func Server() {
 		XSSProtection:         "1; mode=block",
 		XFrameOptions:         "SAMEORIGIN",
 		HSTSMaxAge:            31536000,
-		ContentSecurityPolicy: "default-src 'self'; style-src 'self' 'nonce-" + Nonce + "'",
+		ContentSecurityPolicy: "default-src 'self'; style-src 'self' frame-src youtube.com www.youtube.com; 'nonce-" + Nonce + "'",
 	}))
 
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
@@ -159,6 +182,7 @@ func Server() {
 }
 
 func GetAllFilePathsInDirectory(dirpath string) ([]string, error) {
+
 	var paths []string
 	err := filepath.Walk(dirpath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -203,10 +227,11 @@ var err error
 
 func getFileSystem(TmplMainGo embed.FS) http.FileSystem {
 
-	log.Print("using embed mode")
+	logger := loggers.CreateLogger()
+
 	fsys, err := fs.Sub(TmplMainGo, "assets/templates")
 	if err != nil {
-		log.Print(err)
+		logger.Error("trying to get templates into binary", slog.String("error: ", err.Error()))
 	}
 
 	return http.FS(fsys)
@@ -230,6 +255,8 @@ func getAllFilenames(efs *embed.FS) (files []string, err error) {
 }
 
 func findjsrename() string {
+	//logger := loggers.CreateLogger()
+
 	// Get the current directory
 	currentDir := "./assets/optimized/js"
 	rr := rand.Rander()
@@ -237,40 +264,39 @@ func findjsrename() string {
 	// Walk the directory and print the names of all the files
 	err = filepath.Walk(currentDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			fmt.Println(err)
+			// logger.Error("walking filepath for js", slog.String("error: ", err.Error()))
+
 			return err
 		}
 
 		if strings.Contains(path, "/min") && strings.Contains(path, ".js") {
 
 			if _, err := os.Stat(New_Path); err != nil {
-				// The source does not exist or some other error accessing the source
-				fmt.Println("source:", err)
+				//logger.Error("trying to find new path", slog.String("error: ", err.Error()), slog.String("new path is: ", New_Path))
+
 			}
 
 			if _, err := os.Stat(path); err != nil {
 				// The destination exists or some other error accessing the destination
-				fmt.Println("dest:", err)
+				//logger.Error("trying to find path for js files", slog.String("error: ", err.Error()))
+
 			}
 			if err := os.Rename(path, New_Path); err != nil {
-				fmt.Println(err)
+				//logger.Error("trying to rename js file", slog.String("error: ", err.Error()))
+
 			}
 
-		} else {
-			fmt.Println("doesnt contain directory", path)
 		}
 
 		return nil
 	})
 
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	return rr
 }
 
 func findcssrename() string {
+	//logger := loggers.CreateLogger()
+
 	// Get the current directory
 	currentDir := "./assets/optimized/css/"
 	rr := rand.Rander()
@@ -278,54 +304,49 @@ func findcssrename() string {
 	// Walk the directory and print the names of all the files
 	err = filepath.Walk(currentDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			fmt.Println(err)
+			//logger.Error("walking filepath for css", slog.String("error: ", err.Error()))
+
 			return err
 		}
 
 		if strings.Contains(path, "/min") && strings.Contains(path, ".css") {
 
 			if _, err := os.Stat(New_Path); err != nil {
-				// The source does not exist or some other error accessing the source
-				fmt.Println("source:", err)
+				//logger.Error("trying to find new path", slog.String("error: ", err.Error()), slog.String("new path is: ", New_Path))
+
 			}
 
 			if _, err := os.Stat(path); err != nil {
-				// The destination exists or some other error accessing the destination
-				fmt.Println("dest:", err)
+				//logger.Error("trying to find path for css files", slog.String("error: ", err.Error()))
+
 			}
 			if err := os.Rename(path, New_Path); err != nil {
-				fmt.Println(err)
+				//logger.Error("trying to rename js file", slog.String("error: ", err.Error()))
+
 			}
 
-		} else {
-			fmt.Println("doesnt contain directory", path)
 		}
 
 		return nil
 	})
 
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	return rr
 }
 
 // f is for file, o is for old text, n is for new text
-func UpdateText(f string, o string, n string) {
-	fmt.Println(f, o, n)
+func UpdateText(f string, o string, n string) error {
+
 	input, err := os.ReadFile(f)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	output := bytes.Replace(input, []byte(o), []byte(n), -1)
 
-	fmt.Println("file: ", f, " old: ", o, " new: ", n)
-
 	if err = os.WriteFile(f, output, 0666); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
+
 	}
+
+	return nil
 }

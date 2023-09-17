@@ -10,6 +10,7 @@ import (
 )
 
 func GetUserById(c echo.Context) error {
+
 	// Connect to the database.
 	users := new(user.Users)
 	if err := c.Bind(users); err != nil {

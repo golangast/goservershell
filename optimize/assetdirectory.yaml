@@ -1,6 +1,7 @@
 opt:
+  appname: "goservershell"
   cssin: ./assets/build/css
-  cssout: ./assets/optimized/css/min9070.css
+  cssout: ./assets/optimized/css/min6641026614319376030547615997336373054870.css
   jsin: ./assets/build/js
-  jsout: ./assets/optimized/js/min6660.js
+  jsout: ./assets/optimized/js/min998022590132533548734613373604889186034060.js
   imgin: ./assets/optimized/img

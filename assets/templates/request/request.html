@@ -1,0 +1,86 @@
+{{ template "header" . }}
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Request Health Check
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <div class="card-stacked">
+          <div class="card-content ">
+            <p> Protocol: {{.data.Proto}}<br>
+              Host: {{.data.Host}}<br>
+              Remote Address: {{.data.Address}}<br>
+              Method: {{.data.Method}}<br>
+              Path: {{.data.Path}}<br></p>
+          </div>
+          <div class="card-action">
+            {{ if .data.Stat.Exe}}
+            <table class="table table-sm" style="width: 44%; float: left;">
+              <thead>
+                <tr>
+                  <th scope="col">Title</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Pid</th>
+                  <th scope="col">ParentPid</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Your App</th>
+                  <td>
+                    <div class="badge bg-info text-dark">{{.data.Stat.Exe}}</div>
+                  </td>
+                  <td>
+                    <div class="badge bg-dark">{{.data.Stat.Pid}}</div>
+                  </td>
+                  <td>
+                    <div class="badge bg-dark">{{.data.Stat.Ppid}}</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            {{end}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="accordion-item">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+      Routes
+    </button>
+  </h2>
+  <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+    <div class="accordion-body">
+      {{ range $key, $value := .data.Routes }}
+      <div class="col s12 m7 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+        <div class="card horizontal">
+          <div class="card-stacked">
+            <div class="card-content ">
+              <p>{{ $value | trimAll "{}"}}</p>
+            </div>
+            <div class="card-action">
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+{{ template "footer" . }}
