@@ -22,6 +22,13 @@ func RemoveBrackets(a []string) string {
 	}
 	return aaaa
 }
+func RemoveSquareBrackets(s []string) string {
+	var aa string
+	for _, a := range s {
+		aa = strings.Trim(a, "[]")
+	}
+	return aa
+}
 func CSP(a string) string {
 	return a
 }

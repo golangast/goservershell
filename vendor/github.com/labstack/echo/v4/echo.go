@@ -259,32 +259,18 @@ const (
 
 const (
 	// Version of Echo
-	Version = `
-   ______________________________________________________________________________________
-   | 1. REMEMBER THAT ASSETS ARE TIED TO THE CONFIG IN THE /OPTIMIZE/ASSETDIRECTORY.YAML |
-   | 2. REMEMBER TO CHANGE THE APPNAME IN THE CONFIG TO THE FOLDER NAME                  |
-   | 3. REMEMBER TO CHANGE THE MOD FILE TO YOUR APP NAME                                 |
-   |_____________________________________________________________________________________|
-
-    /ʕ◔ϖ◔ʔ/ COMMANDS TO REMEMBER
-        1. go run main.go st - to start the app
-	2. go run main.go min - to minimize assets
-	3. wgo run -file .html -xdir vendor -xdir internal -xdir src -dir assets/templates -verbose  main.go st - is to watch template files and live reload
-	
-	`
-	website = `
-	
-	`
+	Version = "4.11.1"
+	website = "https://echo.labstack.com"
 	// http://patorjk.com/software/taag/#p=display&f=Small%20Slant&t=Echo
 	banner = `
-	
-	____  _____ _      _____ _      ____  _____ ____    _____  ____    _     ____  _     _____   _____ _     _     
-	/  __\/  __// \__/|/  __// \__/|/  _ \/  __//  __\  /__ __\/  _ \  / \ /|/  _ \/ \ |\/  __/  /    // \ /\/ \  /|
-	|  \/||  \  | |\/|||  \  | |\/||| | //|  \  |  \/|    / \  | / \|  | |_||| / \|| | //|  \    |  __\| | ||| |\ ||
-	|    /|  /_ | |  |||  /_ | |  ||| |_\\|  /_ |    /    | |  | \_/|  | | ||| |-||| \// |  /_   | |   | \_/|| | \||
-	\_/\_\\____\\_/  \|\____\\_/  \|\____/\____\\_/\_\    \_/  \____/  \_/ \|\_/ \|\__/  \____\  \_/   \____/\_/  \|
-																													
-	
+   ____    __
+  / __/___/ /  ___
+ / _// __/ _ \/ _ \
+/___/\__/_//_/\___/ %s
+High performance, minimalist Go web framework
+%s
+____________________________________O/_______
+                                    O\
 `
 )
 
@@ -795,7 +781,7 @@ func (e *Echo) configureServer(s *http.Server) error {
 	}
 
 	if !e.HideBanner {
-		e.colorer.Println(banner, e.colorer.Red(Version))
+		e.colorer.Printf(banner, e.colorer.Red("v"+Version), e.colorer.Blue(website))
 	}
 
 	if s.TLSConfig == nil {

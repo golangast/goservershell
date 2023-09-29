@@ -10,24 +10,28 @@ import (
 
 func Posts(c echo.Context) error {
 	// Bind the request body to a `User` struct.
-	user := new(user.Users)
-	if err := c.Bind(user); err != nil {
+	userr := new(user.Users)
+	if err := c.Bind(userr); err != nil {
 		return err
 	}
 
-	err := user.Create()
+	err := userr.Exists()
 	if err != nil {
 		return err
-	}
+	} else {
+		err = userr.Create()
+		if err != nil {
+			return err
+		}
+		// Marshal the `userr` struct to JSON.
+		jsonData, err := json.Marshal(userr)
+		if err != nil {
+			return err
+		}
 
-	// Marshal the `User` struct to JSON.
-	jsonData, err := json.Marshal(user)
-	if err != nil {
-		return err
+		// Write the JSON data to the response.
+		c.Response().Header().Set("Content-Type", "application/json")
+		return c.JSON(http.StatusOK, jsonData)
 	}
-
-	// Write the JSON data to the response.
-	c.Response().Header().Set("Content-Type", "application/json")
-	return c.JSON(http.StatusOK, jsonData)
 
 }

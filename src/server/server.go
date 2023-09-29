@@ -32,8 +32,10 @@ import (
 )
 
 func Server() {
+
 	logger := loggers.CreateLogger()
 	e := echo.New()
+
 	files, err := getAllFilenames(&assets.Assets)
 	if err != nil {
 		logger.Error(

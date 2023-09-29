@@ -11,6 +11,7 @@ import (
 	"github.com/golangast/goservershell/src/handler/post/createuser"
 	"github.com/golangast/goservershell/src/handler/restful/post"
 	"github.com/labstack/echo/v4"
+	//imports
 )
 
 type Stats struct {
@@ -32,9 +33,9 @@ type Data struct {
 
 func Routes(e *echo.Echo) {
 
-	//get
 	e.GET("/home", home.Home)
 	e.GET("/loginemail/:email/:sitetoken", loginemail.LoginEmail)
+	//routes
 
 	//post
 	e.POST("/usercreate", createuser.Createuser)
