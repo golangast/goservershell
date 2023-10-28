@@ -18,6 +18,7 @@ import (
 	text "github.com/golangast/gentil/utility/text"
 	"github.com/golangast/goservershell/internal/loggers"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -28,7 +29,13 @@ var gengetCmd = &cobra.Command{
 	Short: "generates a get route",
 	Long:  `go run . genget -r about`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("genget called")
+		viper.SetConfigName("assetdirectory") // name of config file (without extension)
+		viper.SetConfigType("yaml")           // REQUIRED if the config file does not have the extension in the name
+		viper.AddConfigPath("./optimize/")    // path to look for the config file in
+		err := viper.ReadInConfig()           // Find and read the config file
+		check(err)
+		//get paths of asset folders from config file
+		repo := viper.GetString("opt.repo")
 		logger := loggers.CreateLogger()
 
 		route, _ := cmd.Flags().GetString("route")
@@ -66,9 +73,9 @@ var gengetCmd = &cobra.Command{
 			}
 		}
 		//update the route.go for the import
-		found = text.FindTextNReturn("./src/routes/routes.go", "github.com/golangast/goservershell/src/handler/get/"+route)
-		if found != `"`+`github.com/golangast/goservershell/src/handler/get/`+route+`"` {
-			err := text.UpdateText("./src/routes/routes.go", "//imports", `"`+`github.com/golangast/goservershell/src/handler/get/`+route+`"`+"\n"+`//imports`)
+		found = text.FindTextNReturn("./src/routes/routes.go", repo+"/src/handler/get/"+route)
+		if found != `"`+repo+`/src/handler/get/`+route+`"` {
+			err := text.UpdateText("./src/routes/routes.go", "//imports", `"`+repo+`/src/handler/get/`+route+`"`+"\n"+`//imports`)
 			if err != nil {
 				logger.Error(
 					"trying to update router.go for the import",

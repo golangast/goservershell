@@ -6,16 +6,10 @@ package cmd
 import (
 	"fmt"
 	"log/slog"
-	"os"
 	"strings"
-	"text/template"
 
-	"github.com/Masterminds/sprig/v3"
-	"github.com/golangast/gentil/utility/ff"
 	"github.com/golangast/goservershell/internal/loggers"
 	"github.com/spf13/cobra"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 // restCmd represents the rest command
@@ -28,41 +22,28 @@ var restCmd = &cobra.Command{
 		logger := loggers.CreateLogger()
 
 		types, _ := cmd.Flags().GetString("types")
-		name, _ := cmd.Flags().GetString("name")
-		fields, _ := cmd.Flags().GetString("fields")
-		folder, _ := cmd.Flags().GetString("folder")
-		folderdir := folder + "/"
+		// name, _ := cmd.Flags().GetString("name")
+		// fields, _ := cmd.Flags().GetString("fields")
+		// checkfields, _ := cmd.Flags().GetString("checkfields")
+		// folder, _ := cmd.Flags().GetString("folder")
+		//folderdir := folder + "/"
 
-		field := GetPropDatatype(fields)
+		// field := GetPropDatatype(fields)
+		// chfields := strings.Split(checkfields, " ")
 
-		d := Data{Fields: field, Lowercasename: name, Uppercasename: cases.Title(language.Und, cases.NoLower).String(name)}
+		//d := Fielddata{Fields: field, CheckFields: chfields, Lowercasename: name, Uppercasename: cases.Title(language.Und, cases.NoLower).String(name)}
 
-		str := `
-		package ` + name + `
-
-		type {{.Uppercasename}} struct {
-			{{range slice .Fields 0}}
-			{{$a := splitn " " 2 . }}
-				{{$a._0}} {{$a._1}}  ` + "`" + `param:"{{$a._0}}" query:"{{$a._0}}" header:"{{$a._0}}" form:"{{$a._0}}" json:"{{$a._0}}" xml:"{{$a._0}}" ` + "`" + `
-		 	{{end}}
-		}
-		
-		
-		`
-		handlerfile, err := gentil.Filefolder("./src/handler/restful/"+types+"/"+folderdir+name, name+".go")
-		if err != nil {
+		switch types {
+		case "":
 			logger.Error(
-				"trying to create handler file",
-				slog.String("error: ", err.Error()),
+				"trying to update route but no types",
+				slog.String("types: ", types),
 			)
-		}
+		case "post", "Post", "POST":
+			//poster.Poster(d, types, folderdir)
 
-		err = Writetemplateslice(str, handlerfile, d)
-		if err != nil {
-			logger.Error(
-				"trying to update router.html",
-				slog.String("error: ", err.Error()),
-			)
+		default:
+			// do something if none of the cases match
 		}
 
 	},
@@ -74,6 +55,7 @@ func init() {
 	restCmd.Flags().StringP("name", "n", "", "Set your name")
 	restCmd.Flags().StringP("fields", "f", "", "Set your fields")
 	restCmd.Flags().StringP("folder", "o", "", "Set your folder")
+	restCmd.Flags().StringP("checkfields", "c", "", "fields that are going to be checked")
 
 }
 func GetPropDatatype(prop string) []string {
@@ -112,18 +94,9 @@ func TrimDotright(s string) string {
 	return s
 }
 
-func Writetemplateslice(temp string, f *os.File, d Data) error {
-	functionMap := sprig.TxtFuncMap()
-	dbmb := template.Must(template.New("t").Funcs(functionMap).Parse(temp))
-	err := dbmb.Execute(f, d)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type Data struct {
+type Fielddata struct {
 	Fields        []string
+	CheckFields   []string
 	Lowercasename string
 	Uppercasename string
 }

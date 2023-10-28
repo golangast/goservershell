@@ -1,0 +1,375 @@
+package sqlz
+
+import (
+	"database/sql"
+	"fmt"
+	"time"
+
+	_ "modernc.org/sqlite"
+)
+
+// The "Table" type represents a table with a name, columns, values, and location.
+// @property {string} Name - The Name property represents the name of the table.
+// @property {[]string} Columns - The "Columns" property is a slice of strings that represents the
+// names of the columns in the table. Each string in the slice represents the name of a column in the
+// table.
+// @property {[]string} Values - The "Values" property in the "Table" struct is an array of strings
+// that represents the values of the columns in the table. Each element in the array corresponds to a
+// row in the table, and the values are ordered based on the columns defined in the "Columns" property.
+// @property {string} Location - The "Location" property in the "Table" struct represents the physical
+// or logical location of the table. It can be used to store information such as the database name,
+// schema name, or file path where the table is located.
+type Table struct {
+	Name     string
+	Columns  []string
+	Values   []string
+	Location string
+}
+
+// all tables
+// The "Tables" type represents a collection of table names, column names, and values.
+// @property {[]string} Names - The `Names` property is a slice of strings that represents the names of
+// the tables.
+// @property {[]string} Columns - The "Columns" property is a slice of strings that represents the
+// names of the columns in a table.
+// @property {[]string} Values - The "Values" property is a slice of strings that represents the values
+// of the columns in a table. Each string in the slice corresponds to a row in the table, and the
+// values are separated by commas or any other delimiter.
+type Tables struct {
+	Names   []string
+	Columns []string
+	Values  []string
+}
+
+/*
+Please add the database location to Table.Location to start
+t:=Table{Location:"./database.db"}
+*/
+// This function opens a connection to the SQLite database located at the path specified in the Table struct's Location field.
+// The connection is returned along with any errors that may have occurred.
+func (t Table) DbConnection() (*sql.DB, error) {
+
+	// Open the database connection.
+	db, err := sql.Open("sqlite", t.Location)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set the maximum number of open connections to 20.
+	db.SetMaxOpenConns(20)
+
+	// Set the maximum number of idle connections to 20.
+	db.SetMaxIdleConns(20)
+
+	// Set the maximum lifetime of a connection to 5 minutes.
+	db.SetConnMaxLifetime(time.Minute * 5)
+
+	// Ping the database to check if it is alive.
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	// Return the database connection and any errors that may have occurred.
+	return db, nil
+}
+
+// This function takes in a table, column name, and table name as parameters.
+// It then queries the database for all values in the specified column from the specified table.
+// The results are returned as a slice of strings.
+
+func (t Table) ColumnSelect(column, tablename string) []string {
+
+	// First, get a connection to the database.
+	data, err := t.DbConnection()
+	ErrorCheck(err)
+
+	// Next, build the query string.
+	query := "SELECT " + column + " FROM " + tablename + ";"
+
+	// Execute the query and get the results.
+	rows, err := data.Query(query)
+	ErrorCheck(err)
+
+	// Create a slice to store the results.
+	columns := []string{}
+
+	// Iterate over the rows and scan the column value into the slice.
+	for rows.Next() {
+		rows.Scan(&column)
+		columns = append(columns, column)
+	}
+
+	// Close the database connection and rows.
+	defer data.Close()
+	defer rows.Close()
+
+	// Return the slice of column values.
+	return columns
+
+}
+
+// The `RowSelectJoin` function is used to query the database for rows that match a specific value in a
+// specified column from two tables that are joined together.
+func (t Table) SelectJoin(value, column, tableone, tabletwo string) ([]string, error) {
+
+	// The code `data, err := t.DbConnection()` is calling the `DbConnection()` method on the `Table`
+	// struct `t` to establish a connection to the SQLite database. It assigns the returned database
+	// connection to the variable `data` and any error that occurred during the connection process to the
+	// variable `err`.
+	data, err := t.DbConnection()
+	ErrorCheck(err)
+	//"SELECT * FROM users JOIN addresses ON users.id = addresses.user_id
+	rows, err := data.Query("SELECT * FROM " + tableone + " JOIN " + tabletwo + " WHERE " + tableone + "." + column + "= " + tabletwo + "." + column + ";")
+	ErrorCheck(err)
+
+	// This code is used to retrieve the column names from the database query result and initialize slices
+	// to store the values of each column.
+	columns, _ := rows.Columns()
+	count := len(columns)
+	values := make([]any, count)
+	valuePtr := make([]any, count)
+
+	var v any
+
+	// The code snippet you provided is iterating over the rows returned by a database query and
+	// extracting the values from each row.
+	for rows.Next() {
+		//this is where it grabs the values
+		for i, _ := range columns {
+			valuePtr[i] = &values[i]
+		}
+
+		//this where it scans them
+		rows.Scan(valuePtr...)
+		// The code snippet is iterating over the columns of a database query result and extracting the
+		// values from each column.
+		for a, _ := range columns {
+
+			val := values[a]
+
+			b, ok := val.([]byte)
+
+			if ok {
+				v = string(b)
+			} else {
+				v = val
+			}
+
+			//put them into TD data
+			t.Values = append(t.Values, fmt.Sprint(v))
+
+		}
+	}
+	defer data.Close()
+	defer rows.Close()
+	return t.Values, err
+
+}
+
+// The `RowSelect` function is a method of the `Table` struct. It is used to query the database for
+// rows that match a specific value in a specified column of the table.
+
+// The `RowSelect` function is a method of the `Table` struct. It is used to query the database for
+// rows that match a specific value in a specified column of the table.
+func (t Table) RowSelect(value, column, table string) []string {
+
+	// This code snippet is querying the database for rows that match a specific value in a specified
+	// column of a table.
+	data, err := t.DbConnection()
+	ErrorCheck(err)
+
+	// The code `rows, err := data.Query("SELECT * FROM " + table + " WHERE " + column + " = " + value + "
+	// ;")` is executing a SQL query to select all columns (`*`) from a specified table (`table`) where a
+	// specific column (`column`) has a certain value (`value`).
+	rows, err := data.Query("SELECT * FROM " + table + " WHERE " + column + " = " + value + " ;")
+	ErrorCheck(err)
+
+	columns, _ := rows.Columns()
+	count := len(columns)
+	values := make([]any, count)
+	valuePtr := make([]any, count)
+	var v any
+	TD := Tables{}
+	// The code snippet you provided is iterating over the rows returned by a database query and
+	// extracting the values from each row.
+	for rows.Next() {
+		// Iterate over the rows and scan the column value into the slice.
+		for i, _ := range columns {
+			valuePtr[i] = &values[i]
+		}
+
+		rows.Scan(valuePtr...)
+		//go through the columns
+		for a, _ := range columns {
+
+			val := values[a]
+
+			b, ok := val.([]byte)
+
+			if ok {
+				v = string(b)
+			} else {
+				v = val
+			}
+
+			//put them into TD data
+			TD.Values = append(TD.Values, fmt.Sprint(v))
+
+		}
+	}
+	fmt.Println(TD.Values)
+	// Close the database connection and rows.
+	defer data.Close()
+	defer rows.Close()
+
+	return columns
+
+}
+
+// The `GetTable` function is used to retrieve a specific table from the database based on its name.
+func (t Table) GetTable(name string) Table {
+
+	tt, err := t.GetTableNames()
+	ErrorCheck(err)
+
+	if tt.Name == name {
+
+		t.Name = tt.Name
+		t.Columns = tt.Columns
+		return t
+	}
+	return t
+}
+
+// The `GetTableNames` function is a method of the `Table` struct. It is used to retrieve the names of
+// all the tables in the SQLite database.
+
+func (t Table) GetTableNames() (Table, error) {
+	data, err := t.DbConnection()
+	ErrorCheck(err)
+	var (
+		types string
+		name  string
+	)
+
+	rows, err := data.Query("SELECT type, name FROM sqlite_master where type='table'")
+	if err != nil {
+		return t, err
+	}
+
+	for rows.Next() {
+
+		err := rows.Scan(&types, &name)
+		if err != nil {
+			return t, err
+		}
+		fmt.Println(name, types)
+		if name != "sqlite_sequence" {
+			t.Name = name
+		}
+
+	}
+	defer data.Close()
+	defer rows.Close()
+
+	return t, nil
+
+}
+
+// The function `SelectEverything` retrieves all table names and their corresponding data from a SQLite
+// database.
+
+func SelectEverything(data *sql.DB) ([]Tables, error) {
+
+	var (
+		tables []string
+		types  string
+		name   string
+		TDS    []Tables
+	)
+
+	//SELECT type FROM sqlite_master where type='table'  AND name='urls
+	//get from database SELECT * FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';
+	rows, err := data.Query("SELECT type, name FROM sqlite_master where type='table'")
+	if err != nil {
+		return nil, err
+	}
+
+	//cycle through the rows to collect all the data
+	for rows.Next() {
+
+		err := rows.Scan(&types, &name)
+		if err != nil {
+			return nil, err
+		}
+
+		//store into memory
+		tables = append(tables, name)
+
+	}
+
+	// The code snippet is iterating over a slice of table names (`tables`) and performing the following
+	// actions for each table:
+	for _, table := range tables {
+		TD := Tables{}
+		rows, _ := data.Query("SELECT * FROM " + table + ";")
+		columns, _ := rows.Columns()
+		count := len(columns)
+		values := make([]any, count)
+		valuePtr := make([]any, count)
+		var v any
+		var prevtable string
+		rows.NextResultSet()
+		for rows.Next() {
+
+			if prevtable != table {
+				//fmt.Print(" table:", table, " columns:", columns)
+				//scan needs any type so turn columns into []any
+				for i, _ := range columns {
+					valuePtr[i] = &values[i]
+				}
+				prevtable = table
+				rows.Scan(valuePtr...)
+				//go through the columns
+				for a, _ := range columns {
+
+					val := values[a]
+
+					b, ok := val.([]byte)
+
+					if ok {
+						v = string(b)
+					} else {
+						v = val
+					}
+
+					//put them into TD data
+					TD.Values = append(TD.Values, fmt.Sprint(v))
+
+				}
+			}
+
+		}
+		TD.Columns = columns
+		TD.Names = append(TD.Names, table)
+		if values[0] == nil {
+
+			TD.Columns = append(TD.Columns, columns...)
+		}
+		TDS = append(TDS, TD)
+
+	}
+
+	//close everything
+
+	defer rows.Close()
+	defer data.Close()
+	return TDS, nil
+
+}
+func ErrorCheck(err error) {
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+}
