@@ -88,6 +88,8 @@ go mod vendor
 
 REMEMBER TO RUN 'go mod tidy' and 'go mod vendor' after to pull down dependencies
 
+REMEMBER TO CHANGE THE /OPTIMIZE/ASSETDIRECTORY.YAML TO YOUR REPO NAME!
+
 ## Commands
 //to run the program
 ```
