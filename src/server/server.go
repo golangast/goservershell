@@ -119,9 +119,8 @@ func Server() {
 			err, exists := user.CheckUser(c, email, idkey)
 			if err != nil {
 				logger.Error(
-					"middleware user doesnt exist",
+					"middleware user doesnt exist"+exists,
 					slog.String("error: ", err.Error()),
-					exists,
 				)
 				return false, err
 			}
