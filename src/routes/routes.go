@@ -11,7 +11,7 @@ import (
 	"github.com/golangast/goservershell/src/handler/post/createuser"
 	"github.com/golangast/goservershell/src/handler/restful/post"
 	"github.com/labstack/echo/v4"
-	// imports
+	//imports
 )
 
 type Stats struct {
